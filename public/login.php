@@ -1,10 +1,10 @@
 <?php
+session_start();
 require __DIR__ . '/../config/database.php';
-require __DIR__ . '/../includes/header.php';
 
 $error = '';
 
-// Only process the form when it's submitted
+// Check the password first, before any HTML is printed
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email    = trim($_POST['email'] ?? '');
     $password = $_POST['password'] ?? '';
@@ -14,7 +14,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $user = $stmt->fetch();
 
     if ($user && password_verify($password, $user['password'])) {
-        // Store only what we need, never the password
         $_SESSION['user_id'] = $user['id'];
         $_SESSION['role']    = $user['role'];
         $_SESSION['name']    = $user['name'];
@@ -23,9 +22,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-    // Same message for wrong email or wrong password: don't reveal which one
     $error = 'Invalid email or password.';
 }
+
+// Only now print the page
+require __DIR__ . '/../includes/header.php';
 ?>
 
 <h2>Login</h2>

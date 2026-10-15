@@ -29,7 +29,7 @@ require __DIR__ . '/../includes/header.php';
   <table border="1" cellpadding="6">
     <tr>
       <th>#</th><th>Title</th><th>Category</th>
-      <th>Priority</th><th>Status</th><th>Opened</th>
+      <th>Priority</th><th>Status</th><th>Opened</th><th>Actions</th>
     </tr>
     <?php foreach ($tickets as $t): ?>
       <tr>
@@ -39,6 +39,15 @@ require __DIR__ . '/../includes/header.php';
         <td><?= $t['priority'] ?></td>
         <td><?= $t['status'] ?></td>
         <td><?= $t['created_at'] ?></td>
+        <td>
+          <?php if ($t['status'] === 'open'): ?>
+            <form method="POST" action="cancel_ticket.php"
+                  onsubmit="return confirm('Cancel this ticket?');">
+              <input type="hidden" name="ticket_id" value="<?= $t['id'] ?>">
+              <button type="submit">Cancel</button>
+            </form>
+          <?php endif; ?>
+        </td>
       </tr>
     <?php endforeach; ?>
   </table>

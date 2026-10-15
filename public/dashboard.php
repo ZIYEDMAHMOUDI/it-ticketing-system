@@ -16,9 +16,9 @@ require __DIR__ . '/../includes/header.php';
 <?php if ($_SESSION['role'] === 'employee'): ?>
   <p>Employee dashboard: tickets come next.</p>
 <?php elseif ($_SESSION['role'] === 'technician'): ?>
-  <p>Technician dashboard: the queue comes next.</p>
+  <p><a href="queue.php">Open the ticket queue</a></p>
 <?php else: ?>
-  <p>Admin dashboard: user management comes next.</p>
+  <p><a href="queue.php">View all tickets</a></p>
 <?php endif; ?>
 
 <p><a href="logout.php">Log out</a></p>

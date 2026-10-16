@@ -3,7 +3,6 @@ require __DIR__ . '/../includes/auth.php';
 require __DIR__ . '/../config/database.php';
 requireRole(['technician', 'admin']);
 
-// Which tickets to show, from the filter links at the top
 $filter = $_GET['filter'] ?? 'open';
 $allowedFilters = ['open', 'in_progress', 'solved', 'canceled', 'mine', 'all'];
 if (!in_array($filter, $allowedFilters, true)) {
@@ -40,19 +39,19 @@ require __DIR__ . '/../includes/header.php';
 ?>
 
 <h2>Ticket Queue</h2>
+<p class="muted">Take new tickets and track the ones you are working on.</p>
 
-<p>
-  Filter:
+<div class="filters">
   <?php foreach (['open', 'in_progress', 'solved', 'canceled', 'mine', 'all'] as $f): ?>
-    <a href="queue.php?filter=<?= $f ?>"><?= $f ?></a>
+    <a class="chip<?= $filter === $f ? ' chip-active' : '' ?>"
+       href="queue.php?filter=<?= $f ?>"><?= str_replace('_', ' ', $f) ?></a>
   <?php endforeach; ?>
-</p>
-<p><a href="dashboard.php">Dashboard</a> | <a href="logout.php">Log out</a></p>
+</div>
 
 <?php if (!$tickets): ?>
   <p>No tickets for this filter.</p>
 <?php else: ?>
-  <table border="1" cellpadding="6">
+  <table>
     <tr>
       <th>#</th><th>Title</th><th>Employee</th><th>Category</th>
       <th>Priority</th><th>Status</th><th>Opened</th><th>Action</th>
@@ -64,7 +63,7 @@ require __DIR__ . '/../includes/header.php';
         <td><?= htmlspecialchars($t['employee']) ?></td>
         <td><?= htmlspecialchars($t['category']) ?></td>
         <td><?= $t['priority'] ?></td>
-        <td><?= $t['status'] ?></td>
+        <td><span class="badge badge-<?= $t['status'] ?>"><?= str_replace('_', ' ', $t['status']) ?></span></td>
         <td><?= $t['created_at'] ?></td>
         <td>
           <?php if ($t['status'] === 'open' && $t['assigned_to'] === null): ?>

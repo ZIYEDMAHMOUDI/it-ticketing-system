@@ -27,21 +27,20 @@ require __DIR__ . '/../includes/header.php';
 ?>
 
 <h2>Ticket #<?= $ticket['id'] ?></h2>
-<p><a href="queue.php">Back to queue</a></p>
+<p class="muted"><?= htmlspecialchars($ticket['title']) ?></p>
 
-<table border="1" cellpadding="6">
-  <tr><th>Title</th><td><?= htmlspecialchars($ticket['title']) ?></td></tr>
+<table>
   <tr><th>Description</th><td><?= nl2br(htmlspecialchars($ticket['description'])) ?></td></tr>
   <tr><th>Employee</th><td><?= htmlspecialchars($ticket['employee']) ?></td></tr>
   <tr><th>Category</th><td><?= htmlspecialchars($ticket['category']) ?></td></tr>
   <tr><th>Priority</th><td><?= $ticket['priority'] ?></td></tr>
-  <tr><th>Status</th><td><?= $ticket['status'] ?></td></tr>
+  <tr><th>Status</th><td><span class="badge badge-<?= $ticket['status'] ?>"><?= str_replace('_', ' ', $ticket['status']) ?></span></td></tr>
   <tr><th>Technician</th><td><?= htmlspecialchars($ticket['technician'] ?? 'Not assigned') ?></td></tr>
   <tr><th>Resolution</th><td><?= nl2br(htmlspecialchars($ticket['resolution'] ?? '')) ?></td></tr>
 </table>
 
 <?php if ($isMine && $ticket['status'] !== 'canceled'): ?>
-  <h3>Update ticket</h3>
+  <h3 style="margin-top:28px">Update ticket</h3>
   <form method="POST" action="ticket_action.php">
     <input type="hidden" name="ticket_id" value="<?= $ticket['id'] ?>">
     <input type="hidden" name="action" value="update">
@@ -51,14 +50,16 @@ require __DIR__ . '/../includes/header.php';
         <option value="in_progress" <?= $ticket['status'] === 'in_progress' ? 'selected' : '' ?>>In progress</option>
         <option value="solved" <?= $ticket['status'] === 'solved' ? 'selected' : '' ?>>Solved</option>
       </select>
-    </label><br>
+    </label>
 
     <label>Resolution (what you did)
       <textarea name="resolution" rows="4"><?= htmlspecialchars($ticket['resolution'] ?? '') ?></textarea>
-    </label><br>
+    </label>
 
     <button type="submit">Save</button>
   </form>
 <?php endif; ?>
+
+<p><a class="btn btn-ghost" href="queue.php">Back to queue</a></p>
 
 <?php require __DIR__ . '/../includes/footer.php'; ?>

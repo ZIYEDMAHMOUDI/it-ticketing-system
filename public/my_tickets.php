@@ -1,11 +1,7 @@
 <?php
-session_start();
+require __DIR__ . '/../includes/auth.php';
 require __DIR__ . '/../config/database.php';
-
-if (!isset($_SESSION['user_id'])) {
-    header('Location: login.php');
-    exit;
-}
+requireRole(['employee', 'technician', 'admin']);
 
 $stmt = $pdo->prepare(
     'SELECT t.id, t.title, t.priority, t.status, t.created_at, c.name AS category
@@ -21,12 +17,13 @@ require __DIR__ . '/../includes/header.php';
 ?>
 
 <h2>My Tickets</h2>
-<p><a href="new_ticket.php">+ New ticket</a> | <a href="dashboard.php">Dashboard</a> | <a href="logout.php">Log out</a></p>
+<p class="muted">Tickets you have opened.</p>
+<p><a class="btn" href="new_ticket.php">+ New ticket</a></p>
 
 <?php if (!$tickets): ?>
   <p>You have no tickets yet.</p>
 <?php else: ?>
-  <table border="1" cellpadding="6">
+  <table>
     <tr>
       <th>#</th><th>Title</th><th>Category</th>
       <th>Priority</th><th>Status</th><th>Opened</th><th>Actions</th>
@@ -37,7 +34,7 @@ require __DIR__ . '/../includes/header.php';
         <td><?= htmlspecialchars($t['title']) ?></td>
         <td><?= htmlspecialchars($t['category']) ?></td>
         <td><?= $t['priority'] ?></td>
-        <td><?= $t['status'] ?></td>
+        <td><span class="badge badge-<?= $t['status'] ?>"><?= str_replace('_', ' ', $t['status']) ?></span></td>
         <td><?= $t['created_at'] ?></td>
         <td>
           <?php if ($t['status'] === 'open'): ?>

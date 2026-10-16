@@ -1,16 +1,11 @@
 <?php
-session_start();
+require __DIR__ . '/../includes/auth.php';
 require __DIR__ . '/../config/database.php';
-
-if (!isset($_SESSION['user_id'])) {
-    header('Location: login.php');
-    exit;
-}
+requireRole(['employee', 'technician', 'admin']);
 
 $errors = [];
 
-// Load categories for the dropdown
-$categories = $pdo->query('SELECT id, name FROM categories')->fetchAll();
+$categories  = $pdo->query('SELECT id, name FROM categories')->fetchAll();
 $categoryIds = array_column($categories, 'id');
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -40,6 +35,7 @@ require __DIR__ . '/../includes/header.php';
 ?>
 
 <h2>New Ticket</h2>
+<p class="muted">Describe the problem so a technician can help quickly.</p>
 
 <?php foreach ($errors as $error): ?>
   <p class="error"><?= htmlspecialchars($error) ?></p>
@@ -48,11 +44,11 @@ require __DIR__ . '/../includes/header.php';
 <form method="POST" action="new_ticket.php">
   <label>Title
     <input type="text" name="title" maxlength="200" required>
-  </label><br>
+  </label>
 
   <label>Description
     <textarea name="description" rows="5" required></textarea>
-  </label><br>
+  </label>
 
   <label>Category
     <select name="category_id" required>
@@ -60,7 +56,7 @@ require __DIR__ . '/../includes/header.php';
         <option value="<?= $c['id'] ?>"><?= htmlspecialchars($c['name']) ?></option>
       <?php endforeach; ?>
     </select>
-  </label><br>
+  </label>
 
   <label>Priority
     <select name="priority">
@@ -68,11 +64,11 @@ require __DIR__ . '/../includes/header.php';
       <option value="medium" selected>Medium</option>
       <option value="high">High</option>
     </select>
-  </label><br>
+  </label>
 
   <button type="submit">Submit ticket</button>
 </form>
 
-<p><a href="my_tickets.php">Back to my tickets</a></p>
+<p><a class="btn btn-ghost" href="my_tickets.php">Back to my tickets</a></p>
 
 <?php require __DIR__ . '/../includes/footer.php'; ?>

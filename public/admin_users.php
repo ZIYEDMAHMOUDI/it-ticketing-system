@@ -9,7 +9,6 @@ $success = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = $_POST['action'] ?? '';
 
-    // Create a new account
     if ($action === 'create') {
         $name     = trim($_POST['name'] ?? '');
         $email    = trim($_POST['email'] ?? '');
@@ -38,17 +37,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $stmt->execute([$name, $email, password_hash($password, PASSWORD_DEFAULT), $role]);
                 $success = 'Account created.';
             } catch (PDOException $e) {
-                // The email column is UNIQUE, so a duplicate lands here
                 $errors[] = 'That email is already in use.';
             }
         }
     }
 
-    // Activate or deactivate an account
     if ($action === 'toggle') {
         $id = (int)($_POST['user_id'] ?? 0);
 
-        // An admin cannot deactivate their own account
         if ($id !== (int)$_SESSION['user_id']) {
             $stmt = $pdo->prepare('UPDATE users SET active = 1 - active WHERE id = ?');
             $stmt->execute([$id]);
@@ -65,38 +61,45 @@ require __DIR__ . '/../includes/header.php';
 ?>
 
 <h2>Manage Users</h2>
-<p><a href="dashboard.php">Dashboard</a> | <a href="logout.php">Log out</a></p>
+<p class="muted">Create accounts and control who can sign in.</p>
 
 <?php foreach ($errors as $error): ?>
   <p class="error"><?= htmlspecialchars($error) ?></p>
 <?php endforeach; ?>
 
 <?php if ($success): ?>
-  <p><?= htmlspecialchars($success) ?></p>
+  <p class="success"><?= htmlspecialchars($success) ?></p>
 <?php endif; ?>
 
 <h3>Create account</h3>
 <form method="POST" action="admin_users.php">
   <input type="hidden" name="action" value="create">
 
-  <label>Name <input type="text" name="name" required></label><br>
-  <label>Email <input type="email" name="email" required></label><br>
+  <label>Name
+    <input type="text" name="name" required>
+  </label>
+
+  <label>Email
+    <input type="email" name="email" required>
+  </label>
+
   <label>Role
     <select name="role">
       <option value="employee">Employee</option>
       <option value="technician">Technician</option>
       <option value="admin">Admin</option>
     </select>
-  </label><br>
+  </label>
+
   <label>Temporary password (min 8 characters)
     <input type="password" name="password" required minlength="8">
-  </label><br>
+  </label>
 
   <button type="submit">Create</button>
 </form>
 
 <h3>All users</h3>
-<table border="1" cellpadding="6">
+<table>
   <tr>
     <th>#</th><th>Name</th><th>Email</th><th>Role</th><th>Status</th><th>Action</th>
   </tr>
